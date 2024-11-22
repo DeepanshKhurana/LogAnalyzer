@@ -1,5 +1,9 @@
 box::use(
+  config[
+    get
+  ],
   shiny[
+    a,
     actionLink,
     div,
     h2,
@@ -12,14 +16,18 @@ box::use(
 #' @export
 ui <- function(id) {
   ns <- NS(id)
+  branding <- get("branding")
   div(
     class = "header",
     div(
       class = "left header-section",
-      img(
-        src = "static/appsilon-logo.png",
-        alt = "Appsilon logo",
-        href = "https://demo.appsilon.com"
+      a(
+        img(
+          src = branding$logo$src,
+          alt = branding$logo$alt
+        ),
+        href = branding$logo$href,
+        target = "_blank"
       ),
       div(
         class = "vertical-line"

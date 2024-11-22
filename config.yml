@@ -3,8 +3,12 @@ default:
   rhino_log_file: !expr Sys.getenv("RHINO_LOG_FILE", NA)
   app_role: "owner"
   branding:
+    logo:
+      src: "static/logo.png"
+      alt: "Appsilon logo"
+      href: "https://demo.appsilon.com"
     colors:
-        red: "#a50e0e"#
+        red: "#a50e0e"
         red-highlight: "#fce8e650"
         green: "#3a5a40"
         green-highlight: "#e0f0df50"
