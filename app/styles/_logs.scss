@@ -16,7 +16,7 @@
       }
 
       .empty-state-text {
-        color: $grey-text;
+        color: var(--grey-text);
         margin-bottom: 40px;
       }
     }

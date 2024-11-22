@@ -1,3 +1,12 @@
+box::use(
+  config[
+    get
+  ],
+  purrr[
+    map_chr
+  ],
+)
+
 #' Function to check if a string of log text has error keywords
 #'
 #' @param text Character. The log string
@@ -35,5 +44,26 @@ format_timestamp <- function(
       format = from
     ),
     format = to
+  )
+}
+
+#' Generate CSS variables from config.yml
+#' @param config the config file
+#' @return a string of CSS variables within :root {}
+#' @export
+generate_css_variables <- function(
+  config = get("branding")
+) {
+  css_lines <- map_chr(
+    names(config$colors),
+    function(name) {
+      color_value <- config$colors[[name]]
+      sprintf("  --%s: %s;", name, color_value)
+    }
+  )
+  paste0(
+    ":root {\n",
+    paste(css_lines, collapse = "\n"),
+    "\n}"
   )
 }

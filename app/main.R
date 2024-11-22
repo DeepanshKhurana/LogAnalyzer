@@ -1,24 +1,9 @@
 # nolint start: box_func_import_count_linter
 box::use(
+  config[get],
   dplyr[select],
   magrittr[`%>%`],
-  shiny[
-    div,
-    fluidPage,
-    img,
-    isTruthy,
-    moduleServer,
-    NS,
-    observeEvent,
-    p,
-    reactive,
-    reactiveValues,
-    removeUI,
-    renderUI,
-    tagList,
-    tags,
-    uiOutput
-  ],
+  shiny,
   shinycssloaders[withSpinner],
 )
 # nolint end
@@ -26,6 +11,7 @@ box::use(
 box::use(
   app/logic/api_utils[get_app_list],
   app/logic/empty_state_utils[generate_empty_state_ui],
+  app/logic/general_utils[generate_css_variables],
   app/view/mod_app_table,
   app/view/mod_header,
   app/view/mod_job_list,
@@ -34,29 +20,32 @@ box::use(
 
 #' @export
 ui <- function(id) {
-  ns <- NS(id)
-  fluidPage(
+  ns <- shiny$NS(id)
+  shiny$fluidPage(
     class = "dashboard-body",
+    shiny$tags$head(
+      shiny$uiOutput(ns("dynamic_colors"))
+    ),
     mod_header$ui("header"),
-    div(
+    shiny$div(
       class = "dashboard-container",
-      div(
+      shiny$div(
         class = "app-table",
         mod_app_table$ui(ns("app_table"))
       ),
-      div(
+      shiny$div(
         class = "vertical-line"
       ),
-      div(
+      shiny$div(
         class = "job-list",
-        uiOutput(ns("job_list_pane"))
+        shiny$uiOutput(ns("job_list_pane"))
       ),
-      div(
+      shiny$div(
         class = "vertical-line"
       ),
-      div(
+      shiny$div(
         class = "logs",
-        uiOutput(ns("logs_pane"))
+        shiny$uiOutput(ns("logs_pane"))
       )
     )
   )
@@ -64,17 +53,24 @@ ui <- function(id) {
 
 #' @export
 server <- function(id) {
-  moduleServer(id, function(input, output, session) {
+  shiny$moduleServer(id, function(input, output, session) {
 
     ns <- session$ns
 
+    branding <- get("branding")
+
+    output$dynamic_colors <- shiny$renderUI({
+      css_content <- generate_css_variables(branding)
+      shiny$tags$style(shiny$HTML(css_content))
+    })
+
     mod_header$server("header")
 
-    state <- reactiveValues()
-    state$selected_app <- reactive({})
-    state$selected_job <- reactive({})
+    state <- shiny$reactiveValues()
+    state$selected_app <- shiny$reactive({})
+    state$selected_job <- shiny$reactive({})
 
-    app_list <- reactive({
+    app_list <- shiny$reactive({
       get_app_list()
     })
 
@@ -84,11 +80,11 @@ server <- function(id) {
       state
     )
 
-    observeEvent(state$selected_app()$guid, {
+    shiny$observeEvent(state$selected_app()$guid, {
 
-      if (isTruthy(state$selected_app()$guid)) {
+      if (shiny$isTruthy(state$selected_app()$guid)) {
 
-        output$job_list_pane <- renderUI({
+        output$job_list_pane <- shiny$renderUI({
           mod_job_list$ui(ns("job_list"))
         })
 
@@ -99,16 +95,16 @@ server <- function(id) {
 
       } else {
 
-        removeUI(ns("job_list_pane"))
+        shiny$removeUI(ns("job_list_pane"))
 
       }
     }, ignoreNULL = FALSE)
 
-    observeEvent(state$selected_job()$key, {
+    shiny$observeEvent(state$selected_job()$key, {
 
-      if (isTruthy(state$selected_job()$key)) {
+      if (shiny$isTruthy(state$selected_job()$key)) {
 
-        output$logs_pane <- renderUI({
+        output$logs_pane <- shiny$renderUI({
           mod_logs$ui(ns("logs"))
         })
 
@@ -119,17 +115,19 @@ server <- function(id) {
       } else {
 
         if (!inherits(app_list(), "data.frame")) {
-          empty_state <- renderUI({
+          empty_state <- shiny$renderUI({
             generate_empty_state_ui(
               text = "Oops! Can't read apps from Posit Connect.",
-              image_path = "static/illustrations/missing_apps.svg"
+              image_path = "app/static/illustrations/missing_apps.svg",
+              color = branding$colors$primary
             )
           })
         } else {
-          empty_state <- renderUI({
+          empty_state <- shiny$renderUI({
             generate_empty_state_ui(
               text = "Select an application and a job to view logs.",
-              image_path = "static/illustrations/empty_state.svg"
+              image_path = "app/static/illustrations/empty_state.svg",
+              color = branding$colors$primary
             )
           })
         }
