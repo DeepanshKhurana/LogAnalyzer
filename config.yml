@@ -19,6 +19,6 @@ default:
         grey-text: grey
         black-text: "#333"
         selected-row: "#00000010"
-        primary: "red"
+        primary: "#0099f9"
 
 
