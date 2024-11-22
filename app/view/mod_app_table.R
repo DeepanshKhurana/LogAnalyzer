@@ -80,6 +80,7 @@ server <- function(id, app_list, state) {
         searchable = TRUE,
         borderless = TRUE,
         pagination = FALSE,
+        onClick = "select",
         selection = "single",
         columns = list(
           guid = colDef(

@@ -58,6 +58,7 @@ server <- function(id, state) {
         selection = "single",
         borderless = TRUE,
         pagination = FALSE,
+        onClick = "select",
         columns = list(
           job = colDef(
             cell = function(job_data) {
