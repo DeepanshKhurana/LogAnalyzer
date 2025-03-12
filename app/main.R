@@ -1,12 +1,7 @@
-# nolint start: box_func_import_count_linter
 box::use(
   config[get],
-  dplyr[select],
-  magrittr[`%>%`],
   shiny,
-  shinycssloaders[withSpinner],
 )
-# nolint end
 
 box::use(
   app/logic/api_utils[get_app_list],
@@ -57,6 +52,7 @@ server <- function(id) {
 
     ns <- session$ns
 
+    app_list <- get_app_list()
     branding <- get("branding")
 
     output$dynamic_colors <- shiny$renderUI({
@@ -66,76 +62,43 @@ server <- function(id) {
 
     mod_header$server("header")
 
-    state <- shiny$reactiveValues()
-    state$selected_app <- shiny$reactive({})
-    state$selected_job <- shiny$reactive({})
+    selected_app_ <- mod_app_table$server("app_table", app_list)$selected_app_
 
-    app_list <- shiny$reactive({
-      get_app_list()
+    selected_job_ <- mod_job_list$server("job_list", selected_app_)$selected_job_
+
+    mod_logs$server("logs", selected_app_, selected_job_)
+
+    output$job_list_pane <- shiny$renderUI({
+      if (!shiny$isTruthy(selected_app_()$guid)) {
+        return(NULL)
+      }
+
+      mod_job_list$ui(ns("job_list"))
     })
 
-    mod_app_table$server(
-      "app_table",
-      app_list(),
-      state
-    )
-
-    shiny$observeEvent(state$selected_app()$guid, {
-
-      if (shiny$isTruthy(state$selected_app()$guid)) {
-
-        output$job_list_pane <- shiny$renderUI({
-          mod_job_list$ui(ns("job_list"))
-        })
-
-        mod_job_list$server(
-          "job_list",
-          state
+    output$logs_pane <- shiny$renderUI({
+      if (!is.data.frame(app_list) || nrow(app_list) == 0) {
+        return(
+          generate_empty_state_ui(
+            text = "Oops! Can't read apps from Posit Connect.",
+            image_path = "app/static/illustrations/missing_apps.svg",
+            color = branding$colors$primary
+          )
         )
-
-      } else {
-
-        shiny$removeUI(ns("job_list_pane"))
-
-      }
-    }, ignoreNULL = FALSE)
-
-    shiny$observeEvent(state$selected_job()$key, {
-
-      if (shiny$isTruthy(state$selected_job()$key)) {
-
-        output$logs_pane <- shiny$renderUI({
-          mod_logs$ui(ns("logs"))
-        })
-
-        mod_logs$server(
-          "logs",
-          state
-        )
-      } else {
-
-        if (!inherits(app_list(), "data.frame")) {
-          empty_state <- shiny$renderUI({
-            generate_empty_state_ui(
-              text = "Oops! Can't read apps from Posit Connect.",
-              image_path = "app/static/illustrations/missing_apps.svg",
-              color = branding$colors$primary
-            )
-          })
-        } else {
-          empty_state <- shiny$renderUI({
-            generate_empty_state_ui(
-              text = "Select an application and a job to view logs.",
-              image_path = "app/static/illustrations/empty_state.svg",
-              color = branding$colors$primary
-            )
-          })
-        }
-
-        output$logs_pane <- empty_state
       }
 
-    }, ignoreNULL = FALSE)
+      if (!shiny$isTruthy(selected_job_()$key)) {
+        return(
+          generate_empty_state_ui(
+            text = "Select an application and a job to view logs.",
+            image_path = "app/static/illustrations/empty_state.svg",
+            color = branding$colors$primary
+          )
+        )
+      }
+
+      mod_logs$ui(ns("logs"))
+    })
 
   })
 }
