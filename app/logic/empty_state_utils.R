@@ -6,8 +6,6 @@ box::use(
     div,
     img,
     p,
-    renderUI,
-    tagAppendAttributes
   ],
 )
 

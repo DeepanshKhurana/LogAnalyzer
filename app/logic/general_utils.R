@@ -1,7 +1,4 @@
 box::use(
-  config[
-    get
-  ],
   purrr[
     map_chr
   ],

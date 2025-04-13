@@ -39,7 +39,7 @@ ui <- function(id) {
     div(
       class = "right header-section",
       actionLink(
-        "lets-talk",
+        ns("lets-talk"),
         label = "Let's Talk",
         class = "cta-button",
         onclick = "window.open('https://appsilon.com/#contact', '_blank');"

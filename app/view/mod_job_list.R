@@ -1,5 +1,4 @@
 box::use(
-  magrittr[`%>%`],
   reactable[
     colDef,
     getReactableState,

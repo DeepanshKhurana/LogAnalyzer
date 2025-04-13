@@ -2,7 +2,6 @@ box::use(
   testthat[
     describe,
     expect_identical,
-    expect_error,
     expect_true,
     it
   ],
