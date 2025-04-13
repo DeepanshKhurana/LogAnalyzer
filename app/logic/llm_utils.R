@@ -17,6 +17,42 @@ is_llm_enabled <- function() {
   get("llm")$enabled %||% FALSE
 }
 
+#' Get valid LLM providers
+#' @return A character vector of valid LLM providers
+get_valid_providers <- function(
+) {
+  ellmer_functions <- ls(ellmer)[
+    grepl(
+      pattern = "^chat_",
+      x = ls(ellmer)
+    )
+  ]
+  sub(
+    pattern = "^chat_",
+    replacement = "",
+    x = ellmer_functions
+  )
+}
+
+#' Check if the provider is valid
+#' @param provider The LLM provider to check
+#' @param valid_providers A character vector of valid LLM providers
+#' @return Logical indicating if the provider is valid
+verify_provider <- function(
+  provider,
+  valid_providers = get_valid_providers()
+) {
+  if (!provider %in% valid_providers) {
+    stop(
+      glue(
+        "Invalid LLM provider '{provider}'. ",
+        "Valid providers are: {paste(valid_providers, collapse = ', ')}"
+      )
+    )
+  }
+  TRUE
+}
+
 #' Get LLM configuration
 #'
 #' Returns the LLM configuration if LLM is enabled. Otherwise, throws an error.
@@ -25,6 +61,10 @@ get_llm_config <- function() {
   if (!is_llm_enabled()) {
     stop("Oops! LLM is not enabled in config.yml!")
   }
+  verify_provider(
+    get("llm")$provider,
+    get_valid_providers()
+  )
   get("llm")
 }
 
