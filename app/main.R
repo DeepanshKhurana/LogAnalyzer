@@ -62,15 +62,25 @@ server <- function(id) {
 
     mod_header$server("header")
 
-    selected_app_ <- mod_app_table$server("app_table", app_list)$selected_app_
+    selected_app_ <- mod_app_table$server(
+      "app_table",
+      app_list
+    )$selected_app_
 
-    selected_job_ <- mod_job_list$server("job_list", selected_app_)$selected_job_
+    selected_job_ <- mod_job_list$server(
+      "job_list",
+      selected_app_
+    )$selected_job_
 
-    mod_logs$server("logs", selected_app_, selected_job_)
+    mod_logs$server(
+      "logs",
+      selected_app_,
+      selected_job_
+    )
 
     output$job_list_pane <- shiny$renderUI({
       if (!shiny$isTruthy(selected_app_()$guid)) {
-        return(NULL)
+        NULL
       }
 
       mod_job_list$ui(ns("job_list"))
@@ -78,22 +88,18 @@ server <- function(id) {
 
     output$logs_pane <- shiny$renderUI({
       if (!is.data.frame(app_list) || nrow(app_list) == 0) {
-        return(
-          generate_empty_state_ui(
-            text = "Oops! Can't read apps from Posit Connect.",
-            image_path = "app/static/illustrations/missing_apps.svg",
-            color = branding$colors$primary
-          )
+        generate_empty_state_ui(
+          text = "Oops! Can't read apps from Posit Connect.",
+          image_path = "app/static/illustrations/missing_apps.svg",
+          color = branding$colors$primary
         )
       }
 
       if (!shiny$isTruthy(selected_job_()$key)) {
-        return(
-          generate_empty_state_ui(
-            text = "Select an application and a job to view logs.",
-            image_path = "app/static/illustrations/empty_state.svg",
-            color = branding$colors$primary
-          )
+        generate_empty_state_ui(
+          text = "Select an application and a job to view logs.",
+          image_path = "app/static/illustrations/empty_state.svg",
+          color = branding$colors$primary
         )
       }
 
