@@ -1,4 +1,3 @@
-# nolint start: box_func_import_count_linter
 box::use(
   config[get],
   dplyr[select],
@@ -6,7 +5,6 @@ box::use(
   shiny,
   shinycssloaders[withSpinner],
 )
-# nolint end
 
 box::use(
   app/logic/api_utils[get_app_list],
