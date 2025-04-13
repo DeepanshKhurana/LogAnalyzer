@@ -8,6 +8,7 @@ default:
       alt: "Appsilon logo"
       href: "https://demo.appsilon.com"
     colors:
+        primary: "#0099f9"
         red: "#a50e0e"
         red-highlight: "#fce8e650"
         green: "#3a5a40"
@@ -23,6 +24,3 @@ default:
         grey-text: grey
         black-text: "#333"
         selected-row: "#00000010"
-        primary: "#0099f9"
-
-
