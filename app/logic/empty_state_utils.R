@@ -14,11 +14,12 @@ box::use(
 #' @description Function to generate an empty state UI
 #' @param text Text to display in the empty state
 #' @param image_path Path to the image to display in the empty state
+#' @param color Color to use for the image
 #' @export
 generate_empty_state_ui <- function(
   text = "Select an application and a job to view logs",
   image_path = "static/illustrations/empty_state.svg",
-  color = NULL
+  color = "#0099f9"
 ) {
   div(
     class = "empty-state-container",
