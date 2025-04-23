@@ -52,7 +52,7 @@ format_timestamp <- function(
 #' @return a string of CSS variables within :root {}
 #' @export
 generate_css_variables <- function(
-  config = get("branding")
+  config
 ) {
   css_lines <- map_chr(
     names(config$colors),

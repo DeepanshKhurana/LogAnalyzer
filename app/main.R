@@ -13,13 +13,19 @@ box::use(
   app/view/mod_logs,
 )
 
+# Load Branding
+branding <- get("branding")
+branding_css_variables <- generate_css_variables(
+  branding
+)
+
 #' @export
 ui <- function(id) {
   ns <- shiny$NS(id)
   shiny$fluidPage(
     class = "dashboard-body",
     shiny$tags$head(
-      shiny$uiOutput(ns("dynamic_colors"))
+      shiny$tags$style(shiny$HTML(branding_css_variables))
     ),
     mod_header$ui("header"),
     shiny$div(
@@ -53,12 +59,6 @@ server <- function(id) {
     ns <- session$ns
 
     app_list <- get_app_list()
-    branding <- get("branding")
-
-    output$dynamic_colors <- shiny$renderUI({
-      css_content <- generate_css_variables(branding)
-      shiny$tags$style(shiny$HTML(css_content))
-    })
 
     mod_header$server("header")
 

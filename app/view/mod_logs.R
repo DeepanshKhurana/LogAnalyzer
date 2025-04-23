@@ -1,4 +1,3 @@
-# nolint start: box_func_import_count_linter
 box::use(
   dplyr[mutate],
   glue[glue],
@@ -24,7 +23,6 @@ box::use(
     uiOutput
   ],
 )
-# nolint end
 
 box::use(
   app/logic/api_utils[download_job_logs, get_job_logs],
